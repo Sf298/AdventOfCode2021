@@ -9,8 +9,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static utils.graph.GridGraph.boxed;
-import static utils.graph.Node.stream;
+import static utils.graph.GraphUtils.boxed;
+import static utils.graph.GraphUtils.stream;
 
 public class Day9 {
 

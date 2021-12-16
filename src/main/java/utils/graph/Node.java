@@ -288,34 +288,42 @@ public class Node<T> {
      * Find all possible paths from one node to another.
      * @param target The destination node.
      * @param edgeWeight A function that calculates the weight of moving from the left node to the right node.
+     *                   A <code>null</code> indicates that the edge cannot be traversed.
      * @return The shortest possible path from this not to the target.
      */
-    public List<Node<T>> shortestWalk(@NonNull Node<T> target, BiFunction<Path<T>, Node<T>, Long> edgeWeight) {
-        Map<Path<T>, Long> paths = new HashMap<>(Map.of(new Path<>(List.of(this)), 0L));
-
-        while (true) {
-            long minWeight = Long.MAX_VALUE;
-            Path<T> minPath = null;
-            for (val e : paths.entrySet()) {
-                if (e.getValue() < minWeight) {
-                    minWeight = e.getValue();
-                    minPath = e.getKey();
+    public List<Node<T>> shortestWalk(@NonNull Node<T> target, BiFunction<Node<T>, Node<T>, Long> edgeWeight) {
+        Map<Node<T>, Long> distances = new HashMap<>(Map.of(this, 0L));
+        for (val n : breadthFirst()) {
+            if (n.equals(target)) break;
+            for (val ne : n.adjacent) {
+                Long weight = edgeWeight.apply(n,ne);
+                if (isNull(weight)) continue;
+                long oldDist = distances.getOrDefault(ne, Long.MAX_VALUE);
+                long newDist = distances.get(n) + weight;
+                if (oldDist > newDist) {
+                    distances.put(ne, newDist);
                 }
-            }
-            paths.remove(minPath);
-
-            if (isNull(minPath)) return null;
-
-            for (val neighbor : minPath.getPath().get(minPath.getPath().size()-1).adjacent) {
-                if (neighbor.equals(target)) {
-                    return Stream.concat(minPath.getPath().stream(), Stream.of(neighbor)).collect(toList());
-                }
-                Long newWeight = edgeWeight.apply(minPath, neighbor);
-                if (isNull(newWeight)) continue;
-
-                paths.put(new Path<>(minPath.getPath(), neighbor), minWeight + newWeight);
             }
         }
+
+        List<Node<T>> path = new ArrayList<>(List.of(target));
+        while (true) {
+            Node<T> n = path.get(path.size()-1);
+            if (n.equals(this)) break;
+
+            Node<T> minNe = null;
+            for (val ne : n.adjacent) {
+                if (!distances.containsKey(ne)) continue;
+                if (minNe == null || distances.get(ne) < distances.get(minNe)) {
+                    minNe = ne;
+                }
+            }
+
+            path.add(minNe);
+        }
+
+        Collections.reverse(path);
+        return path;
     }
 
     public static class Path<T> {

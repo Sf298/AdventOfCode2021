@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import static utils.graph.GraphUtils.boxed;
+
 public class Day11 {
 
     private static final int DAY = Integer.parseInt(Day11.class.getSimpleName().replaceAll("[^0-9]", ""));
@@ -23,7 +25,7 @@ public class Day11 {
                 .map(l -> Arrays.stream(l.split("")).mapToInt(Integer::parseInt).toArray())
                 .toArray(int[][]::new);
 
-        GridGraph<Integer> graph = new GridGraph<>(GridGraph.boxed(grid), 8);
+        GridGraph<Integer> graph = new GridGraph<>(boxed(grid), 8);
         long flashCount = 0;
         for (int step = 0; step < 100; step++) {
             Set<GridGraph.Coord> flashedNodes = new HashSet<>();
@@ -73,7 +75,7 @@ public class Day11 {
                 .map(l -> Arrays.stream(l.split("")).mapToInt(Integer::parseInt).toArray())
                 .toArray(int[][]::new);
 
-        GridGraph<Integer> graph = new GridGraph<>(GridGraph.boxed(grid), 8);
+        GridGraph<Integer> graph = new GridGraph<>(boxed(grid), 8);
         for (int step = 0; step < 100000; step++) {
             Set<GridGraph.Coord> flashedNodes = new HashSet<>();
 
