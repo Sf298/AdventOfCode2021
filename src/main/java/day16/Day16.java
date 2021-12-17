@@ -3,6 +3,7 @@ package day16;
 import utils.StringConsumer;
 import utils.Utils;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,13 +23,22 @@ public class Day16 {
     }
 
     private static void part1() {
-        String hex = /*"A0016C880162017C3686B18A3D4780";*/ Utils.streamLinesForDay(DAY).collect(Collectors.joining("\n"));
+        String hex = Utils.streamLinesForDay(DAY).collect(Collectors.joining("\n"));
         String bin = hex2bin(hex);
         System.out.println(bin);
 
-        System.out.println(new ParsedPacket(new StringConsumer(bin)));
+        ParsedPacket packet = new ParsedPacket(new StringConsumer(bin));
+        System.out.println(packet);
 
-        System.out.println("Part 1 ANS: " + bin);
+        long ans = sumVersions(packet);
+        System.out.println("Part 1 ANS: " + ans);
+    }
+    private static long sumVersions(ParsedPacket packet) {
+        long sum = packet.version;
+        for (ParsedPacket sp : packet.payload) {
+            sum += sumVersions(sp);
+        }
+        return sum;
     }
 
     private static void part2() {
@@ -68,6 +78,7 @@ public class Day16 {
         public int typeId;
         public String lengthTypeId;
         public Integer packetCount;
+        public Integer payloadLength;
 
         public BigInteger literal;
         public List<ParsedPacket> payload = new ArrayList<>();
@@ -88,7 +99,7 @@ public class Day16 {
 
             lengthTypeId = sc.consume(1);
             if (lengthTypeId.equals("0")) {
-                int payloadLength = Integer.parseInt(sc.consume(15), 2);
+                payloadLength = Integer.parseInt(sc.consume(15), 2);
                 packetCount = null;
                 String payloadString = sc.consume(payloadLength);
                 StringConsumer sc2 = new StringConsumer(payloadString);
@@ -97,12 +108,20 @@ public class Day16 {
                 }
             } else {
                 packetCount = Integer.parseInt(sc.consume(11), 2);
-                String payloadString = sc.consume(sc.dToEnd());
-                StringConsumer sc2 = new StringConsumer(payloadString);
                 for (int i = 0; i < packetCount; i++) {
-                    payload.add(new ParsedPacket(sc2));
+                    payload.add(new ParsedPacket(sc));
                 }
-                System.out.println("Remaining: '"+sc2+"'");
+            }
+
+            // calculate literals
+            switch (typeId) {
+                case 0 -> literal = payload.stream().map(p -> p.literal).reduce(BigInteger.ZERO, BigInteger::add);
+                case 1 -> literal = payload.stream().map(p -> p.literal).reduce(BigInteger.ONE, BigInteger::multiply);
+                case 2 -> literal = payload.stream().map(p -> p.literal).reduce(BigInteger.valueOf(Long.MAX_VALUE), BigInteger::min);
+                case 3 -> literal = payload.stream().map(p -> p.literal).reduce(BigInteger.valueOf(Long.MIN_VALUE), BigInteger::max);
+                case 5 -> literal = BigInteger.valueOf((payload.get(0).literal.compareTo(payload.get(1).literal) > 0) ? 1 : 0);
+                case 6 -> literal = BigInteger.valueOf((payload.get(0).literal.compareTo(payload.get(1).literal) < 0) ? 1 : 0);
+                case 7 -> literal = BigInteger.valueOf((payload.get(0).literal.compareTo(payload.get(1).literal) == 0) ? 1 : 0);
             }
         }
 
@@ -113,24 +132,20 @@ public class Day16 {
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
-            if (isLiteral()) {
-                sb.append("ParsedPacket{v").append(version).append(", type=").append(typeId).append(", literal=").append(literal).append("}\n");
-                return sb.toString();
-            } else {
-                sb.append("ParsedPacket{v").append(version).append(", type=").append(typeId).append(", packetCount=").append(packetCount).append(", payload=[");
-                if (!payload.isEmpty()) {
-                    sb.append("\n\t");
-                    StringBuilder payloadBuilder = new StringBuilder();
-                    for (ParsedPacket pp : payload) {
-                        payloadBuilder.append(pp);
-                    }
-                    String payloadString = payloadBuilder.toString().replaceAll("\n", "\n\t");
-                    payloadString = payloadString.substring(0, payloadString.length()-1);
-                    sb.append(payloadString);
+
+            sb.append("ParsedPacket{v").append(version).append(", type=").append(typeId).append(", literal=").append(literal)/*.append(", packetCount=").append(packetCount).append(", payloadLength=").append(payloadLength)*/.append(", payload=[");
+            if (!payload.isEmpty()) {
+                sb.append("\n\t");
+                StringBuilder payloadBuilder = new StringBuilder();
+                for (ParsedPacket pp : payload) {
+                    payloadBuilder.append(pp);
                 }
-                sb.append("]}\n");
-                return sb.toString();
+                String payloadString = payloadBuilder.toString().replaceAll("\n", "\n\t");
+                payloadString = payloadString.substring(0, payloadString.length()-1);
+                sb.append(payloadString);
             }
+            sb.append("]}\n");
+            return sb.toString();
         }
     }
 
