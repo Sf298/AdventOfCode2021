@@ -2,6 +2,8 @@ package utils.graph;
 
 import lombok.NonNull;
 import lombok.val;
+import org.apache.commons.lang3.tuple.Pair;
+import utils.PriorityQueue;
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -97,6 +99,51 @@ public class Node<T> {
                         .forEach(q::add);
 
                 return curr;
+            }
+        };
+    }
+
+    public Iterable<Pair<Node<T>, Long>> breadthFirstPriority(BiFunction<Node<T>, Node<T>, Long> edgeWeight) {
+        Node<T> thiz = this;
+
+        return () -> new Iterator<>() {
+
+            final PriorityQueue<Node<T>> q = new PriorityQueue<>(Map.of(thiz, 0L));
+            final Map<Node<T>, Long> scanned = new HashMap<>(Map.of(thiz, 0L));
+
+            @Override
+            public boolean hasNext() {
+                return !q.isEmpty();
+            }
+
+            @Override
+            public Pair<Node<T>, Long> next() {
+                Node<T> curr = q.poll();
+                if (isNull(curr)) {
+                    return null;
+                }
+
+                for (Node<T> adj : curr.adjacent) {
+                    Long weight = edgeWeight.apply(curr, adj);
+                    if (isNull(weight)) continue;
+
+                    long newDist = scanned.get(curr)+weight;
+                    if (!scanned.containsKey(adj) || newDist < scanned.get(adj)) {
+                        scanned.put(adj, newDist);
+                    } else {
+                        continue;
+                    }
+
+                    Long priority = q.getPriority(adj);
+                    if (isNull(priority)) {
+                        q.put(adj, newDist);
+                    } else if (newDist < priority) {
+                        q.remove(adj);
+                        q.put(adj, newDist);
+                    }
+                }
+
+                return Pair.of(curr, scanned.get(curr));
             }
         };
     }
@@ -293,17 +340,9 @@ public class Node<T> {
      */
     public List<Node<T>> shortestWalk(@NonNull Node<T> target, BiFunction<Node<T>, Node<T>, Long> edgeWeight) {
         Map<Node<T>, Long> distances = new HashMap<>(Map.of(this, 0L));
-        for (val n : breadthFirst()) {
-            if (n.equals(target)) break;
-            for (val ne : n.adjacent) {
-                Long weight = edgeWeight.apply(n,ne);
-                if (isNull(weight)) continue;
-                long oldDist = distances.getOrDefault(ne, Long.MAX_VALUE);
-                long newDist = distances.get(n) + weight;
-                if (oldDist > newDist) {
-                    distances.put(ne, newDist);
-                }
-            }
+        for (val n : breadthFirstPriority(edgeWeight)) {
+            if (n.getKey().equals(target)) break;
+            distances.put(n.getKey(), n.getValue());
         }
 
         List<Node<T>> path = new ArrayList<>(List.of(target));
