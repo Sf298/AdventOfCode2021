@@ -1,5 +1,367 @@
-NNCB
-NCNBCHB
-NBCCNBBBCBHCB
-NBBBCNCCNBBNBNBBCHBHHBCHB
-NBBNBNBBCCNBCNCCNBBNBBNBBBNBBNBBCBHCBHHNHCBBCBHCB
+ParsedPacket{v4, type=0, payload=[
+	ParsedPacket{v2, type=1, payload=[
+		ParsedPacket{v4, type=6, payload=[
+			ParsedPacket{v0, type=4, payload=[]}
+			ParsedPacket{v4, type=4, payload=[]}
+		]}
+		ParsedPacket{v5, type=4, payload=[]}
+	]}
+	ParsedPacket{v6, type=1, payload=[
+		ParsedPacket{v6, type=6, payload=[
+			ParsedPacket{v2, type=4, payload=[]}
+			ParsedPacket{v6, type=4, payload=[]}
+		]}
+		ParsedPacket{v1, type=4, payload=[]}
+	]}
+	ParsedPacket{v7, type=3, payload=[
+		ParsedPacket{v7, type=4, payload=[]}
+		ParsedPacket{v3, type=4, payload=[]}
+	]}
+	ParsedPacket{v4, type=0, payload=[
+		ParsedPacket{v2, type=4, payload=[]}
+		ParsedPacket{v1, type=4, payload=[]}
+		ParsedPacket{v7, type=4, payload=[]}
+		ParsedPacket{v3, type=4, payload=[]}
+	]}
+	ParsedPacket{v3, type=1, payload=[
+		ParsedPacket{v6, type=6, payload=[
+			ParsedPacket{v3, type=4, payload=[]}
+			ParsedPacket{v6, type=4, payload=[]}
+		]}
+		ParsedPacket{v7, type=4, payload=[]}
+	]}
+	ParsedPacket{v3, type=1, payload=[
+		ParsedPacket{v7, type=4, payload=[]}
+		ParsedPacket{v7, type=7, payload=[
+			ParsedPacket{v7, type=0, payload=[
+				ParsedPacket{v2, type=4, payload=[]}
+				ParsedPacket{v0, type=4, payload=[]}
+				ParsedPacket{v3, type=4, payload=[]}
+			]}
+			ParsedPacket{v7, type=0, payload=[
+				ParsedPacket{v7, type=4, payload=[]}
+				ParsedPacket{v6, type=4, payload=[]}
+				ParsedPacket{v7, type=4, payload=[]}
+			]}
+		]}
+	]}
+	ParsedPacket{v3, type=1, payload=[
+		ParsedPacket{v1, type=5, payload=[
+			ParsedPacket{v7, type=4, payload=[]}
+			ParsedPacket{v0, type=4, payload=[]}
+		]}
+		ParsedPacket{v0, type=4, payload=[]}
+	]}
+	ParsedPacket{v1, type=4, payload=[]}
+	ParsedPacket{v6, type=4, payload=[]}
+	ParsedPacket{v4, type=2, payload=[
+		ParsedPacket{v7, type=4, payload=[]}
+		ParsedPacket{v2, type=4, payload=[]}
+		ParsedPacket{v6, type=4, payload=[]}
+		ParsedPacket{v2, type=4, payload=[]}
+		ParsedPacket{v0, type=4, payload=[]}
+	]}
+	ParsedPacket{v5, type=4, payload=[]}
+	ParsedPacket{v1, type=3, payload=[
+		ParsedPacket{v4, type=4, payload=[]}
+	]}
+	ParsedPacket{v3, type=1, payload=[
+		ParsedPacket{v6, type=6, payload=[
+			ParsedPacket{v7, type=4, payload=[]}
+			ParsedPacket{v4, type=4, payload=[]}
+		]}
+		ParsedPacket{v7, type=4, payload=[]}
+	]}
+	ParsedPacket{v6, type=4, payload=[]}
+	ParsedPacket{v0, type=0, payload=[
+		ParsedPacket{v0, type=4, payload=[]}
+		ParsedPacket{v6, type=4, payload=[]}
+		ParsedPacket{v3, type=4, payload=[]}
+	]}
+	ParsedPacket{v3, type=1, payload=[
+		ParsedPacket{v6, type=6, payload=[
+			ParsedPacket{v0, type=0, payload=[
+				ParsedPacket{v6, type=4, payload=[]}
+				ParsedPacket{v1, type=4, payload=[]}
+				ParsedPacket{v3, type=4, payload=[]}
+			]}
+			ParsedPacket{v7, type=0, payload=[
+				ParsedPacket{v5, type=4, payload=[]}
+				ParsedPacket{v7, type=4, payload=[]}
+				ParsedPacket{v1, type=4, payload=[]}
+			]}
+		]}
+		ParsedPacket{v1, type=4, payload=[]}
+	]}
+	ParsedPacket{v7, type=4, payload=[]}
+	ParsedPacket{v4, type=1, payload=[
+		ParsedPacket{v0, type=4, payload=[]}
+		ParsedPacket{v2, type=7, payload=[
+			ParsedPacket{v0, type=4, payload=[]}
+			ParsedPacket{v1, type=4, payload=[]}
+		]}
+	]}
+	ParsedPacket{v0, type=4, payload=[]}
+	ParsedPacket{v5, type=3, payload=[
+		ParsedPacket{v1, type=4, payload=[]}
+		ParsedPacket{v2, type=4, payload=[]}
+		ParsedPacket{v2, type=4, payload=[]}
+	]}
+	ParsedPacket{v4, type=4, payload=[]}
+	ParsedPacket{v2, type=1, payload=[
+		ParsedPacket{v1, type=3, payload=[
+			ParsedPacket{v5, type=3, payload=[
+				ParsedPacket{v6, type=0, payload=[
+					ParsedPacket{v7, type=0, payload=[
+						ParsedPacket{v0, type=0, payload=[
+							ParsedPacket{v7, type=2, payload=[
+								ParsedPacket{v1, type=3, payload=[
+									ParsedPacket{v4, type=1, payload=[
+										ParsedPacket{v1, type=0, payload=[
+											ParsedPacket{v3, type=2, payload=[
+												ParsedPacket{v4, type=1, payload=[
+													ParsedPacket{v4, type=2, payload=[
+														ParsedPacket{v5, type=0, payload=[
+															ParsedPacket{v1, type=3, payload=[
+																ParsedPacket{v5, type=3, payload=[
+																	ParsedPacket{v1, type=1, payload=[
+																		ParsedPacket{v7, type=2, payload=[
+																			ParsedPacket{v2, type=1, payload=[
+																				ParsedPacket{v7, type=1, payload=[
+																					ParsedPacket{v3, type=4, payload=[]}
+																				]}
+																			]}
+																		]}
+																	]}
+																]}
+															]}
+														]}
+													]}
+												]}
+											]}
+										]}
+									]}
+								]}
+							]}
+						]}
+					]}
+				]}
+			]}
+		]}
+	]}
+	ParsedPacket{v5, type=1, payload=[
+		ParsedPacket{v1, type=5, payload=[
+			ParsedPacket{v6, type=0, payload=[
+				ParsedPacket{v4, type=4, payload=[]}
+				ParsedPacket{v4, type=4, payload=[]}
+				ParsedPacket{v4, type=4, payload=[]}
+			]}
+			ParsedPacket{v5, type=0, payload=[
+				ParsedPacket{v3, type=4, payload=[]}
+				ParsedPacket{v2, type=4, payload=[]}
+				ParsedPacket{v6, type=4, payload=[]}
+			]}
+		]}
+		ParsedPacket{v0, type=4, payload=[]}
+	]}
+	ParsedPacket{v1, type=2, payload=[
+		ParsedPacket{v0, type=4, payload=[]}
+		ParsedPacket{v5, type=4, payload=[]}
+	]}
+	ParsedPacket{v6, type=4, payload=[]}
+	ParsedPacket{v0, type=1, payload=[
+		ParsedPacket{v2, type=4, payload=[]}
+		ParsedPacket{v5, type=5, payload=[
+			ParsedPacket{v0, type=4, payload=[]}
+			ParsedPacket{v0, type=4, payload=[]}
+		]}
+	]}
+	ParsedPacket{v4, type=4, payload=[]}
+	ParsedPacket{v4, type=1, payload=[
+		ParsedPacket{v5, type=4, payload=[]}
+		ParsedPacket{v6, type=7, payload=[
+			ParsedPacket{v0, type=4, payload=[]}
+			ParsedPacket{v0, type=4, payload=[]}
+		]}
+	]}
+	ParsedPacket{v0, type=0, payload=[
+		ParsedPacket{v4, type=4, payload=[]}
+		ParsedPacket{v5, type=4, payload=[]}
+		ParsedPacket{v5, type=4, payload=[]}
+		ParsedPacket{v1, type=4, payload=[]}
+		ParsedPacket{v7, type=4, payload=[]}
+	]}
+	ParsedPacket{v3, type=0, payload=[
+		ParsedPacket{v0, type=4, payload=[]}
+	]}
+	ParsedPacket{v5, type=1, payload=[
+		ParsedPacket{v1, type=4, payload=[]}
+	]}
+	ParsedPacket{v5, type=1, payload=[
+		ParsedPacket{v5, type=4, payload=[]}
+		ParsedPacket{v1, type=4, payload=[]}
+		ParsedPacket{v1, type=4, payload=[]}
+		ParsedPacket{v0, type=4, payload=[]}
+		ParsedPacket{v7, type=4, payload=[]}
+	]}
+	ParsedPacket{v7, type=1, payload=[
+		ParsedPacket{v1, type=4, payload=[]}
+		ParsedPacket{v5, type=4, payload=[]}
+	]}
+	ParsedPacket{v1, type=1, payload=[
+		ParsedPacket{v3, type=5, payload=[
+			ParsedPacket{v4, type=4, payload=[]}
+			ParsedPacket{v4, type=4, payload=[]}
+		]}
+		ParsedPacket{v1, type=4, payload=[]}
+	]}
+	ParsedPacket{v3, type=1, payload=[
+		ParsedPacket{v7, type=0, payload=[
+			ParsedPacket{v5, type=4, payload=[]}
+			ParsedPacket{v2, type=4, payload=[]}
+			ParsedPacket{v1, type=4, payload=[]}
+		]}
+		ParsedPacket{v5, type=0, payload=[
+			ParsedPacket{v6, type=4, payload=[]}
+			ParsedPacket{v1, type=4, payload=[]}
+			ParsedPacket{v0, type=4, payload=[]}
+		]}
+		ParsedPacket{v2, type=0, payload=[
+			ParsedPacket{v3, type=4, payload=[]}
+			ParsedPacket{v4, type=4, payload=[]}
+			ParsedPacket{v3, type=4, payload=[]}
+		]}
+	]}
+	ParsedPacket{v7, type=4, payload=[]}
+	ParsedPacket{v7, type=2, payload=[
+		ParsedPacket{v1, type=4, payload=[]}
+		ParsedPacket{v5, type=4, payload=[]}
+		ParsedPacket{v1, type=4, payload=[]}
+		ParsedPacket{v1, type=4, payload=[]}
+	]}
+	ParsedPacket{v0, type=2, payload=[
+		ParsedPacket{v6, type=4, payload=[]}
+		ParsedPacket{v1, type=4, payload=[]}
+		ParsedPacket{v5, type=4, payload=[]}
+	]}
+	ParsedPacket{v0, type=1, payload=[
+		ParsedPacket{v3, type=4, payload=[]}
+		ParsedPacket{v2, type=6, payload=[
+			ParsedPacket{v3, type=4, payload=[]}
+			ParsedPacket{v6, type=4, payload=[]}
+		]}
+	]}
+	ParsedPacket{v6, type=1, payload=[
+		ParsedPacket{v2, type=6, payload=[
+			ParsedPacket{v6, type=4, payload=[]}
+			ParsedPacket{v4, type=4, payload=[]}
+		]}
+		ParsedPacket{v2, type=4, payload=[]}
+	]}
+	ParsedPacket{v6, type=1, payload=[
+		ParsedPacket{v5, type=4, payload=[]}
+		ParsedPacket{v2, type=5, payload=[
+			ParsedPacket{v3, type=4, payload=[]}
+			ParsedPacket{v7, type=4, payload=[]}
+		]}
+	]}
+	ParsedPacket{v6, type=1, payload=[
+		ParsedPacket{v7, type=5, payload=[
+			ParsedPacket{v7, type=4, payload=[]}
+			ParsedPacket{v6, type=4, payload=[]}
+		]}
+		ParsedPacket{v3, type=4, payload=[]}
+	]}
+	ParsedPacket{v4, type=3, payload=[
+		ParsedPacket{v0, type=4, payload=[]}
+		ParsedPacket{v5, type=4, payload=[]}
+		ParsedPacket{v0, type=4, payload=[]}
+		ParsedPacket{v4, type=4, payload=[]}
+	]}
+	ParsedPacket{v0, type=1, payload=[
+		ParsedPacket{v4, type=4, payload=[]}
+		ParsedPacket{v6, type=7, payload=[
+			ParsedPacket{v1, type=4, payload=[]}
+			ParsedPacket{v6, type=4, payload=[]}
+		]}
+	]}
+	ParsedPacket{v7, type=3, payload=[
+		ParsedPacket{v2, type=4, payload=[]}
+		ParsedPacket{v4, type=4, payload=[]}
+		ParsedPacket{v1, type=4, payload=[]}
+		ParsedPacket{v3, type=4, payload=[]}
+		ParsedPacket{v5, type=4, payload=[]}
+	]}
+	ParsedPacket{v5, type=0, payload=[
+		ParsedPacket{v0, type=1, payload=[
+			ParsedPacket{v3, type=4, payload=[]}
+			ParsedPacket{v5, type=4, payload=[]}
+			ParsedPacket{v0, type=4, payload=[]}
+		]}
+		ParsedPacket{v3, type=1, payload=[
+			ParsedPacket{v7, type=4, payload=[]}
+			ParsedPacket{v5, type=4, payload=[]}
+			ParsedPacket{v5, type=4, payload=[]}
+		]}
+		ParsedPacket{v1, type=1, payload=[
+			ParsedPacket{v6, type=4, payload=[]}
+			ParsedPacket{v7, type=4, payload=[]}
+			ParsedPacket{v6, type=4, payload=[]}
+		]}
+	]}
+	ParsedPacket{v3, type=0, payload=[
+		ParsedPacket{v3, type=4, payload=[]}
+		ParsedPacket{v4, type=4, payload=[]}
+	]}
+	ParsedPacket{v7, type=1, payload=[
+		ParsedPacket{v5, type=6, payload=[
+			ParsedPacket{v5, type=0, payload=[
+				ParsedPacket{v6, type=4, payload=[]}
+				ParsedPacket{v4, type=4, payload=[]}
+				ParsedPacket{v3, type=4, payload=[]}
+			]}
+			ParsedPacket{v1, type=0, payload=[
+				ParsedPacket{v3, type=4, payload=[]}
+				ParsedPacket{v7, type=4, payload=[]}
+				ParsedPacket{v4, type=4, payload=[]}
+			]}
+		]}
+		ParsedPacket{v6, type=4, payload=[]}
+	]}
+	ParsedPacket{v4, type=1, payload=[
+		ParsedPacket{v3, type=4, payload=[]}
+		ParsedPacket{v7, type=4, payload=[]}
+		ParsedPacket{v2, type=4, payload=[]}
+	]}
+	ParsedPacket{v5, type=1, payload=[
+		ParsedPacket{v1, type=4, payload=[]}
+		ParsedPacket{v6, type=4, payload=[]}
+		ParsedPacket{v0, type=4, payload=[]}
+		ParsedPacket{v1, type=4, payload=[]}
+	]}
+	ParsedPacket{v0, type=1, payload=[
+		ParsedPacket{v0, type=4, payload=[]}
+		ParsedPacket{v6, type=5, payload=[
+			ParsedPacket{v1, type=4, payload=[]}
+			ParsedPacket{v6, type=4, payload=[]}
+		]}
+	]}
+	ParsedPacket{v2, type=2, payload=[
+		ParsedPacket{v5, type=4, payload=[]}
+	]}
+	ParsedPacket{v1, type=1, payload=[
+		ParsedPacket{v5, type=4, payload=[]}
+		ParsedPacket{v5, type=5, payload=[
+			ParsedPacket{v6, type=0, payload=[
+				ParsedPacket{v3, type=4, payload=[]}
+				ParsedPacket{v5, type=4, payload=[]}
+				ParsedPacket{v6, type=4, payload=[]}
+			]}
+			ParsedPacket{v7, type=0, payload=[
+				ParsedPacket{v2, type=4, payload=[]}
+				ParsedPacket{v5, type=4, payload=[]}
+				ParsedPacket{v5, type=4, payload=[]}
+			]}
+		]}
+	]}
+]}
