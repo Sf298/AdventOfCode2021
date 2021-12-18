@@ -5,351 +5,420 @@ import org.apache.commons.lang3.tuple.Pair;
 import utils.PermutationIterable;
 import utils.Utils;
 
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toMap;
 
 public class Day18 {
 
-    private static final int DAY = parseInt(Day18.class.getSimpleName().replaceAll("[^0-9]", ""));
+    private static final int DAY = Integer.parseInt(Day18.class.getSimpleName().replaceAll("[^0-9]", ""));
 
     public static void main(String[] args) {
-        //part1();
+        part1();
         part2();
     }
 
     private static void part1() {
-        String testNumber;
-        String testSum;
+        SFNumber number;
+        number = SFNumber.parse("[[[[[9,8],1],2],3],4]").tryExplode();
+        test(number, "[[[[0,9],2],3],4]", 1);
+        number = SFNumber.parse("[7,[6,[5,[4,[3,2]]]]]").tryExplode();
+        test(number, "[7,[6,[5,[7,0]]]]", 2);
+        number = SFNumber.parse("[[6,[5,[4,[3,2]]]],1]").tryExplode();
+        test(number, "[[6,[5,[7,0]]],3]", 3);
+        number = SFNumber.parse("[[3,[2,[1,[7,3]]]],[6,[5,[4,[3,2]]]]]").tryExplode();
+        test(number, "[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]", 4);
 
-        testNumber = explode("[[[[[9,8],1],2],3],4]");
-        test(testNumber, "[[[[0,9],2],3],4]", 1);
-        testNumber = explode("[7,[6,[5,[4,[3,2]]]]]");
-        test(testNumber, "[7,[6,[5,[7,0]]]]", 2);
-        testNumber = explode("[[6,[5,[4,[3,2]]]],1]");
-        test(testNumber, "[[6,[5,[7,0]]],3]", 3);
-        testNumber = explode("[[3,[2,[1,[7,3]]]],[6,[5,[4,[3,2]]]]]");
-        test(testNumber, "[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]", 4);
+        number = SFNumber.add(SFNumber.parse("[[[[4,3],4],4],[7,[[8,4],9]]]"), SFNumber.parse("[1,1]"));
+        number.reduceAll(false);
+        test(number, "[[[[0,7],4],[[7,8],[6,0]]],[8,1]]", 5);
 
-        testNumber = reduceAll(add("[[[[4,3],4],4],[7,[[8,4],9]]]", "[1,1]"), false);
-        test(testNumber, "[[[[0,7],4],[[7,8],[6,0]]],[8,1]]", 5);
-
-        testSum = chainAdd(false, "[1,1]", "[2,2]", "[3,3]", "[4,4]", "[5,5]", "[6,6]");
+        SFNumberPair testSum = SFNumber.chainAdd(false,
+                SFNumber.parse("[1,1]"),
+                SFNumber.parse("[2,2]"),
+                SFNumber.parse("[3,3]"),
+                SFNumber.parse("[4,4]"),
+                SFNumber.parse("[5,5]"),
+                SFNumber.parse("[6,6]")
+        );
         test(testSum, "[[[[5,0],[7,4]],[5,5]],[6,6]]", 6);
 
-/*
-[[[[4,0],[5,4]],[[7,7],[6,0]]],[[7,[5,5]],[[0,[11,3]],[[6,3],[8,8]]]]]
-0123   2 3   21 23   2 3   210 12  3   21 23  4
 
-[[[[4,0],[5,0]],[[[4,5],[2,6]],[9,5]]],[7,[[[3,7],[4,3]],[[6,3],[8,8]]]]]
-0123   2 3   21 234
- */
+        number = SFNumber.add(SFNumber.parse("[[[0,[4,5]],[0,0]],[[[4,5],[2,6]],[9,5]]]"), SFNumber.parse("[7,[[[3,7],[4,3]],[[6,3],[8,8]]]]"));
+        number.reduceAll(false);
+        test(number, "[[[[4,0],[5,4]],[[7,7],[6,0]]],[[8,[7,7]],[[7,9],[5,0]]]]", 7);
 
-        // 1st of the long section
-        testNumber = add("[[[0,[4,5]],[0,0]],[[[4,5],[2,6]],[9,5]]]", "[7,[[[3,7],[4,3]],[[6,3],[8,8]]]]");
-        testNumber = reduceAll(testNumber, false);
-        test(testNumber, "[[[[4,0],[5,4]],[[7,7],[6,0]]],[[8,[7,7]],[[7,9],[5,0]]]]", 7);
 
-        // 2nd of the long section
-        testNumber = add("[[[[4,0],[5,4]],[[7,7],[6,0]]],[[8,[7,7]],[[7,9],[5,0]]]]", "[[2,[[0,8],[3,4]]],[[[6,7],1],[7,[1,6]]]]");
-        testNumber = reduceAll(testNumber, false);
-        test(testNumber, "[[[[6,7],[6,7]],[[7,7],[0,7]]],[[[8,7],[7,7]],[[8,8],[8,0]]]]", 8);
-
-        testSum = chainAdd(false,
-                "[[[0,[4,5]],[0,0]],[[[4,5],[2,6]],[9,5]]]",
-                "[7,[[[3,7],[4,3]],[[6,3],[8,8]]]]",
-                "[[2,[[0,8],[3,4]]],[[[6,7],1],[7,[1,6]]]]",
-                "[[[[2,4],7],[6,[0,5]]],[[[6,8],[2,8]],[[2,1],[4,5]]]]",
-                "[7,[5,[[3,8],[1,4]]]]",
-                "[[2,[2,2]],[8,[8,1]]]",
-                "[2,9]",
-                "[1,[[[9,3],9],[[9,0],[0,7]]]]",
-                "[[[5,[7,4]],7],1]",
-                "[[[[4,2],2],6],[8,7]]"
+        long start = System.currentTimeMillis();
+        testSum = SFNumber.chainAdd(false,
+                SFNumber.parse("[[[0,[4,5]],[0,0]],[[[4,5],[2,6]],[9,5]]]"),
+                SFNumber.parse("[7,[[[3,7],[4,3]],[[6,3],[8,8]]]]"),
+                SFNumber.parse("[[2,[[0,8],[3,4]]],[[[6,7],1],[7,[1,6]]]]"),
+                SFNumber.parse("[[[[2,4],7],[6,[0,5]]],[[[6,8],[2,8]],[[2,1],[4,5]]]]"),
+                SFNumber.parse("[7,[5,[[3,8],[1,4]]]]"),
+                SFNumber.parse("[[2,[2,2]],[8,[8,1]]]"),
+                SFNumber.parse("[2,9]"),
+                SFNumber.parse("[1,[[[9,3],9],[[9,0],[0,7]]]]"),
+                SFNumber.parse("[[[5,[7,4]],7],1]"),
+                SFNumber.parse("[[[[4,2],2],6],[8,7]]")
         );
-        test(testSum, "[[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]]", 9);
+        System.out.println("Chain Add: " + (System.currentTimeMillis() - start));
+        test(testSum, "[[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]]", 8);
 
-        String[] numbers = Utils.streamLinesForDay(DAY).toArray(String[]::new);
-        String sum = chainAdd(false, numbers);
-        val ans = magnitude(sum);
+        start = System.currentTimeMillis();
+        SFNumber.add(SFNumber.parse("[[[0,[4,5]],[0,0]],[[[4,5],[2,6]],[9,5]]]"), SFNumber.parse("[7,[[[3,7],[4,3]],[[6,3],[8,8]]]]"));
+        System.out.println("Add: " + (System.currentTimeMillis() - start));
+
+        start = System.currentTimeMillis();
+        SFNumber.copy(testSum);
+        System.out.println("Copy: " + (System.currentTimeMillis() - start));
+
+        start = System.currentTimeMillis();
+        testSum.magnitude();
+        System.out.println("mag: " + (System.currentTimeMillis() - start));
+
+        SFNumber[] numbers = Utils.streamLinesForDay(DAY)
+                .map(SFNumber::parse)
+                .toArray(SFNumber[]::new);
+        SFNumberPair sum = SFNumber.chainAdd(false, numbers);
+        val ans = sum.magnitude();
         System.out.println("Part 1 ANS: " + ans);
     }
 
     private static void part2() {
-        String[] numbers = {
-                "[[[0,[5,8]],[[1,7],[9,6]]],[[4,[1,2]],[[1,4],2]]]",
-                "[[[5,[2,8]],4],[5,[[9,9],0]]]",
-                "[6,[[[6,2],[5,6]],[[7,6],[4,7]]]]",
-                "[[[6,[0,7]],[0,9]],[4,[9,[9,0]]]]",
-                "[[[7,[6,4]],[3,[1,3]]],[[[5,5],1],9]]",
-                "[[6,[[7,3],[3,2]]],[[[3,8],[5,7]],4]]",
-                "[[[[5,4],[7,7]],8],[[8,3],8]]",
-                "[[9,3],[[9,9],[6,[4,9]]]]",
-                "[[2,[[7,7],7]],[[5,8],[[9,3],[0,2]]]]",
-                "[[[[5,2],5],[8,[3,7]]],[[5,[7,5]],[4,4]]]"
-        };
+        SFNumber[] numbers = Utils.streamLinesForDay(DAY)
+                .map(SFNumber::parse)
+                .toArray(SFNumber[]::new);
         long start = System.currentTimeMillis();
-        PermutationIterable<String> permutations = new PermutationIterable<>(asList(numbers));
-        val results = permutations.stream()
-                    .parallel()
-                    .map(ns -> {
-                        String sum = chainAdd(false, ns.toArray(String[]::new));
-                        long mag = magnitude(sum);
-                        return Pair.of(sum, mag);
-                    })
-                    .collect(toMap(p -> "ans", Function.identity(), (p1, p2) -> p1.getValue() > p2.getValue() ? p1 : p2));
-        System.out.println(results.get("ans"));
-        System.out.println(System.currentTimeMillis() - start);
-        val pair = maximumChainAdd(numbers, new LinkedHashSet<>());
-        System.out.println(pair);
-
-
-
-        int ans = 0;
-        System.out.println("Part 2 ANS: " + ans);
-    }
-
-    private static Pair<String, Long> maximumChainAdd(String[] numbers, LinkedHashSet<Integer> added) {
-        if (added.size() == numbers.length) {
-            //String sum = chainAdd(false, added.stream().map(i -> numbers[i]).toArray(String[]::new));
-            //long mag = chainAdd(false, added.stream().map(i -> numbers[i]).toArray(String[]::new))
-            return Pair.of("sum", 1L);
-        }
-
-        Pair<String, Long> out = null;
+        long maxMag = 0;
+        SFNumber maxNum = null;
         for (int i = 0; i < numbers.length; i++) {
-            if (added.contains(i)) continue;
-
-            LinkedHashSet<Integer> newAdded = new LinkedHashSet<>(added);
-            newAdded.add(i);
-            Pair<String, Long> result = maximumChainAdd(numbers, newAdded);
-            if (out == null || result.getValue() > out.getValue()) {
-                out = result;
-            }
-        }
-
-        return out;
-    }
-    private static String chainAdd(boolean debug, String... numbers) {
-        String sum = numbers[0];
-        for (int i = 1; i < numbers.length; i++) {
-            sum = reduceAll(add(sum, numbers[i]), debug);
-        }
-        return sum;
-    }
-    private static String add(String number1, String number2) {
-        return "[" + number1 + "," + number2 + "]";
-    }
-    private static String reduceAll(String number, boolean debug) {
-        while (true) {
-            if (debug) System.out.print(number);
-            int firstExplodeIndex = firstExplodeIndex(number);
-            int firstSplitIndex = firstSplitIndex(number);
-
-            if (firstExplodeIndex != -1) {
-                number = explode(number);
-                if (debug) System.out.println(" Explodes into");
-            } else if (firstSplitIndex != -1) {
-                number = split(number);
-                if (debug) System.out.println(" Splits into");
-            } else {
-                break;
-            }
-        }
-        if (debug) System.out.println();
-        return number;
-        /*while (true) {
-            if (debug) System.out.print(number);
-            int firstExplodeIndex = firstExplodeIndex(number);
-            int firstSplitIndex = firstSplitIndex(number);
-            if (firstExplodeIndex == -1 && firstSplitIndex == -1)
-                break;
-
-            if (firstSplitIndex == -1 || (firstExplodeIndex != -1 && firstExplodeIndex <= firstSplitIndex)) {
-                number = explode(number);
-                if (debug) System.out.println(" Explodes into");
-            } else if (firstExplodeIndex == -1 || firstSplitIndex < firstExplodeIndex) {
-                number = split(number);
-                if (debug) System.out.println(" Splits into");
-            }
-        }
-        if (debug) System.out.println();
-        return number;*/
-    }
-    private static String split(String number) {
-        int firstTooBigIdx = indexOfFirstTooBig(number, 0);
-        String firstTooBigStr = literal(number, firstTooBigIdx);
-        int firstTooBig = parseInt(firstTooBigStr);
-
-        int t = firstTooBig / 2;
-        String newValue = "[" + t + "," + (firstTooBig-t) + "]";
-
-        number = replaceFirst(number, firstTooBigStr, newValue, firstTooBigIdx);
-        return number;
-    }
-    private static String explode(String number) {
-        int firstTooDeepIdx = indexOfFirstDepth(number, 4, 0);
-
-        // replace with 0
-        String firstTooDeep = subNumber(number, firstTooDeepIdx);
-        number = replaceFirst(number, firstTooDeep, "0", firstTooDeepIdx);
-        int[] subNumbers = {
-                parseInt(firstTooDeep.split(",")[0].replaceAll("[^0-9]", "")),
-                parseInt(firstTooDeep.split(",")[1].replaceAll("[^0-9]", ""))
-        };
-
-        // update previous number
-        int previousNumIdx = indexOfPreviousNumber(number, firstTooDeepIdx-1);
-        if (previousNumIdx != -1) {
-            String previousNumStr = literal(number, previousNumIdx);
-            int previousNum = parseInt(previousNumStr);
-            number = replaceFirst(number, previousNumStr, String.valueOf(previousNum + subNumbers[0]), previousNumIdx);
-        }
-
-        // update previous number
-        int nextNumIdx = indexOfNextNumber(number, firstTooDeepIdx+1);
-        if (nextNumIdx != -1) {
-            String nextNumStr = literal(number, nextNumIdx);
-            int nextNum = parseInt(nextNumStr);
-            number = replaceFirst(number, nextNumStr, String.valueOf(nextNum + subNumbers[1]), nextNumIdx);
-        }
-
-        return number;
-    }
-    private static int firstSplitIndex(String number) {
-        return indexOfFirstTooBigParent(number, 0);
-    }
-    private static int firstExplodeIndex(String number) {
-        return indexOfFirstDepth(number, 4, 0);
-    }
-    private static int indexOfFirstTooBigParent(String number, int startIndex) {
-        int idx = indexOfFirstTooBig(number, startIndex);
-        return indexOfLastDepth(number, 0, idx);
-    }
-    private static int indexOfFirstTooBig(String number, int startIndex) {
-        Pattern pattern = Pattern.compile("[0-9]{2,}");
-        Matcher matcher = pattern.matcher(number);
-        if (matcher.find(startIndex)) {
-            return matcher.start();
-        }
-        return -1;
-    }
-    private static int indexOfFirstDepth(String number, int depth, int startIndex) {
-        int bracketsCount = -1;
-        for (int i = startIndex; i < number.length(); i++) {
-            if (number.charAt(i) == '[') bracketsCount++;
-            if (number.charAt(i) == ']') bracketsCount--;
-            if (bracketsCount == depth) return i;
-        }
-        return -1;
-    }
-    private static int indexOfLastDepth(String number, int depth, int startIndex) {
-        int bracketsCount = -1;
-        for (int i = startIndex; i >= 0; i--) {
-            if (number.charAt(i) == '[') bracketsCount++;
-            if (number.charAt(i) == ']') bracketsCount--;
-            if (bracketsCount == -depth) return i;
-        }
-        return -1;
-    }
-    private static int indexOfNextNumber(String number, int startIndex) {
-        int i = startIndex;
-        while ('0' <= number.charAt(i) && number.charAt(i) <='9') {
-            i++;
-        }
-        for (; i < number.length(); i++) {
-            if ('0' <= number.charAt(i) && number.charAt(i) <='9') return i;
-        }
-        return -1;
-    }
-    private static int indexOfPreviousNumber(String number, int startIndex) {
-        int i = startIndex;
-        while ('0' <= number.charAt(i) && number.charAt(i) <='9') {
-            i--;
-        }
-        i--;
-        for (; i >= 0; i--) {
-            if ('0' <= number.charAt(i) && number.charAt(i) <='9') {
-                while ('0' <= number.charAt(i) && number.charAt(i) <='9') {
-                    i--;
+            for (int j = 0; j < numbers.length; j++) {
+                if(i==j) continue;
+                SFNumber n1 = SFNumber.copy(numbers[i]);
+                SFNumber n2 = SFNumber.copy(numbers[j]);
+                SFNumberPair sum = SFNumber.add(n1, n2);
+                sum.reduceAll(false);
+                long mag = sum.magnitude();
+                if (mag > maxMag) {
+                    maxMag = mag;
+                    maxNum = sum;
                 }
-                return i + 1;
             }
         }
-        return -1;
-    }
-    private static int getDepth(String number, int startIndex) {
-        int bracketsCount = -1;
-        for (int i = startIndex; i >= 0; i--) {
-            if (number.charAt(i) == '[') bracketsCount++;
-            if (number.charAt(i) == ']') bracketsCount--;
-        }
-        return bracketsCount;
-    }
-    private static String subNumber(String number, int startIndex) {
-        if (startIndex == -1) return null;
-        int end = indexOfFirstDepth(number, -1, startIndex) + 1;
-        return number.substring(startIndex, end);
-    }
-    private static String literal(String number, int startIndex) {
-        if (startIndex == -1) return null;
+        System.out.println(maxNum);
+        System.out.println(System.currentTimeMillis() - start);
 
-        int end = startIndex;
-        while ('0' <= number.charAt(end) && number.charAt(end) <='9') {
-            end++;
-        }
-        return number.substring(startIndex, end);
-    }
-    private static String replaceFirst(String number, String substring, String replacement, int startIndex) {
-        int index = number.indexOf(substring, startIndex);
-        String left = number.substring(0, index);
-        String right = number.substring(index);
-
-        String pattern = substring.replace("[", "\\[");
-        right = right.replaceFirst(pattern, replacement);
-        return left + right;
-    }
-    private static long magnitude(String number) {
-        if (number.matches("[0-9]+")) {
-            return Integer.parseInt(number);
-        } else if(number.startsWith("[")) {
-            number = number.substring(1,number.length()-1);
-            int openBracketsCount = 0;
-            int splitPoint = 0;
-            for (; splitPoint < number.length(); splitPoint++) {
-                if (number.charAt(splitPoint) == '[') openBracketsCount++;
-                if (number.charAt(splitPoint) == ']') openBracketsCount--;
-                if (openBracketsCount == 0 && number.charAt(splitPoint) == ',') break;
-            }
-
-            long leftMag = magnitude(number.substring(0, splitPoint));
-            long rightMag = magnitude(number.substring(splitPoint+1));
-
-            return  3*leftMag + 2*rightMag;
-        }
-        throw new RuntimeException("failed to parse '"+number+"'");
+        System.out.println("Part 2 ANS: " + maxMag);
     }
 
-    private static boolean test(String actual, String expected, int testNumber) {
-        String str = actual.toString().replaceAll("<", "[").replaceAll(">", "]");
-        if (!str.equals(expected)) {
-            System.out.println("Test " + testNumber + " FAILED: ");
+    private static void test(SFNumber actual, String expected, int testNumber) {
+        String actualStr = actual.toString().replace('<', '[').replace('>', ']');
+        if (!actualStr.equals(expected)) {
+            System.out.println("Test " + testNumber + " failed: ");
             System.out.println("e: " + expected);
             System.out.println("a: " + actual);
             System.out.println();
-            return false;
         } else {
             System.out.println("Test " + testNumber + " passed.");
-            return true;
+        }
+    }
+
+    private interface SFNumber {
+        SFNumber tryExplode();
+        SFNumber trySplit();
+        long magnitude();
+        SFNumberPair getParent();
+        void setParent(SFNumberPair p);
+
+        static SFNumber parse(String str) {
+            if (str.matches("[0-9]+")) {
+                return new SFNumberLiteral(Integer.parseInt(str));
+            } else if(str.startsWith("[")) {
+                str = str.substring(1,str.length()-1);
+                int openBracketsCount = 0;
+                int splitPoint = 0;
+                for (; splitPoint < str.length(); splitPoint++) {
+                    if (str.charAt(splitPoint) == '[') openBracketsCount++;
+                    if (str.charAt(splitPoint) == ']') openBracketsCount--;
+                    if (openBracketsCount == 0 && str.charAt(splitPoint) == ',') break;
+                }
+
+                return new SFNumberPair(parse(str.substring(0, splitPoint)), parse(str.substring(splitPoint+1)));
+            }
+            throw new RuntimeException("failed to parse '"+str+"'");
+        }
+
+        static List<SFNumber> copy(List<SFNumber> numbers) {
+            return numbers.stream().map(SFNumber::copy).collect(Collectors.toList());
+        }
+        static SFNumber copy(SFNumber number) {
+            if (number instanceof SFNumberLiteral) {
+                return new SFNumberLiteral(((SFNumberLiteral) number).literal);
+            } else {
+                SFNumberPair p = (SFNumberPair) number;
+                return new SFNumberPair(copy(p.left), copy(p.right));
+            }
+        }
+
+        static SFNumberPair chainAdd(boolean debug, SFNumber... numbers) {
+            List<SFNumber> numbersList = copy(asList(numbers));
+            SFNumber sum = numbersList.get(0);
+            for (int i = 1; i < numbersList.size(); i++) {
+                sum = SFNumber.add(sum, numbersList.get(i));
+                sum.reduceAll(debug);
+            }
+            return (SFNumberPair) sum;
+        }
+        static SFNumberPair add(SFNumber left, SFNumber right) {
+            return new SFNumberPair(left, right);
+        }
+
+        default int depth() {
+            int depth = 0;
+            SFNumber n = this;
+            while (nonNull(n.getParent())) {
+                n = n.getParent();
+                depth++;
+            }
+            return depth;
+        }
+
+        default void reduceAll(boolean debug) {
+            while (true) {
+                if (debug) System.out.print(this);
+                val explodeResult = tryExplode();
+                if (nonNull(explodeResult)) {
+                    if (debug) System.out.println(" Explodes into");
+                    continue;
+                }
+                val splitResult = trySplit();
+                if (debug) System.out.println(" Splits into");
+                if (isNull(splitResult)) {
+                    break;
+                }
+            }
+        }
+    }
+
+    private static class SFNumberLiteral implements SFNumber {
+        public SFNumberPair parent;
+        public int literal;
+
+        public SFNumberLiteral(int literal) {
+            this.literal = literal;
+        }
+
+        @Override
+        public SFNumber tryExplode() {
+            return null;
+        }
+
+        @Override
+        public SFNumber trySplit() {
+            if (literal <=9)
+                return null;
+
+            int left = literal / 2;
+            if (parent == null) System.out.println(this);
+            return new SFNumberPair(left, literal - left, parent);
+        }
+
+        @Override
+        public long magnitude() {
+            return literal;
+        }
+
+        @Override
+        public SFNumberPair getParent() {
+            return parent;
+        }
+
+        @Override
+        public void setParent(SFNumberPair p) {
+            parent = p;
+        }
+
+        @Override
+        public String toString() {
+            return literal+"";
+        }
+    }
+
+    private static class SFNumberPair implements SFNumber {
+        public SFNumberPair parent;
+        public SFNumber left;
+        public SFNumber right;
+
+        public SFNumberPair(SFNumber left, SFNumber right) {
+            this(left, right, null);
+        }
+        public SFNumberPair(SFNumber left, int right) {
+            this(left, right, null);
+        }
+        public SFNumberPair(int left, SFNumber right) {
+            this(left, right, null);
+        }
+        public SFNumberPair(int left, int right) {
+            this(left, right, null);
+        }
+        public SFNumberPair(SFNumber left, SFNumber right, SFNumberPair parent) {
+            this.left = left;
+            this.right = right;
+            this.parent = parent;
+
+            left.setParent(this);
+            right.setParent(this);
+        }
+        public SFNumberPair(SFNumber left, int right, SFNumberPair parent) {
+            this(left, new SFNumberLiteral(right), parent);
+        }
+        public SFNumberPair(int left, SFNumber right, SFNumberPair parent) {
+            this(new SFNumberLiteral(left), right, parent);
+        }
+        public SFNumberPair(int left, int right, SFNumberPair parent) {
+            this(new SFNumberLiteral(left), new SFNumberLiteral(right), parent);
+        }
+
+        @Override
+        public SFNumber tryExplode() {
+            return internalExplode(0);
+        }
+        private SFNumber internalExplode(int depth) {
+            if (depth >= 4) {
+                // left
+                SFNumberPair p = firstParentWithLeft(this);
+                if (nonNull(p)) {
+                    SFNumberLiteral c = rightmostChild(p.left);
+                    if (nonNull(c)) {
+                        c.literal += ((SFNumberLiteral) this.left).literal;
+                    }
+                }
+                // right
+                p = firstParentWithRight(this);
+                if (nonNull(p)) {
+                    SFNumberLiteral c = leftmostChild(p.right);
+                    if (nonNull(c)) {
+                        c.literal += ((SFNumberLiteral) this.right).literal;
+                    }
+                }
+                return new SFNumberLiteral(0);
+            }
+
+            if (left instanceof SFNumberPair) {
+                SFNumber newLeft = ((SFNumberPair) left).internalExplode(depth+1);
+                if (nonNull(newLeft)) {
+                    left = newLeft;
+                    left.setParent(this);
+                    return this;
+                }
+            } else {
+                SFNumber newLeft = left.tryExplode();
+                if (nonNull(newLeft)) {
+                    left = newLeft;
+                    left.setParent(this);
+                    return this;
+                }
+            }
+            if (right instanceof SFNumberPair) {
+                SFNumber newRight = ((SFNumberPair) right).internalExplode(depth+1);
+                if (nonNull(newRight)) {
+                    right = newRight;
+                    right.setParent(this);
+                    return this;
+                }
+            } else {
+                SFNumber newRight = right.tryExplode();
+                if (nonNull(newRight)) {
+                    right = newRight;
+                    right.setParent(this);
+                    return this;
+                }
+            }
+            return null;
+        }
+
+        @Override
+        public SFNumber trySplit() {
+            SFNumber leftResult = left.trySplit();
+            if(nonNull(leftResult)) {
+                left = leftResult;
+                right.setParent(this);
+                return this;
+            }
+
+            SFNumber rightResult = right.trySplit();
+            if(nonNull(rightResult)) {
+                right = rightResult;
+                right.setParent(this);
+                return this;
+            }
+            return null;
+        }
+
+        @Override
+        public long magnitude() {
+            return left.magnitude() * 3 + right.magnitude() * 2;
+        }
+
+        @Override
+        public SFNumberPair getParent() {
+            return parent;
+        }
+
+        @Override
+        public void setParent(SFNumberPair p) {
+            parent = p;
+        }
+
+        private static SFNumberPair firstParentWithLeft(SFNumber child) {
+            SFNumberPair p = child.getParent();
+            while (nonNull(p) && p.left.equals(child)) {
+                child = p;
+                p = p.parent;
+            }
+            return p;
+        }
+
+        private static SFNumberPair firstParentWithRight(SFNumber child) {
+            SFNumberPair p = child.getParent();
+            while (nonNull(p) && p.right.equals(child)) {
+                child = p;
+                p = p.parent;
+            }
+            return p;
+        }
+
+        private static SFNumberLiteral leftmostChild(SFNumber n) {
+            while (nonNull(n)) {
+                if(n instanceof SFNumberLiteral)
+                    return (SFNumberLiteral) n;
+                n = ((SFNumberPair) n).left;
+            }
+            return null;
+        }
+
+        private static SFNumberLiteral rightmostChild(SFNumber n) {
+            while (nonNull(n)) {
+                if(n instanceof SFNumberLiteral)
+                    return (SFNumberLiteral) n;
+                n = ((SFNumberPair) n).right;
+            }
+            return null;
+        }
+
+        @Override
+        public String toString() {
+            if (depth() >= 4) {
+                return "<" + left + "," + right + '>';
+            }
+            return "[" + left + "," + right + ']';
         }
     }
 
