@@ -1,21 +1,30 @@
 package day18;
 
 import lombok.val;
+import org.apache.commons.lang3.tuple.Pair;
+import utils.PermutationIterable;
 import utils.Utils;
 
-import java.util.concurrent.atomic.AtomicReferenceArray;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static java.lang.Integer.parseInt;
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toMap;
 
 public class Day18 {
 
     private static final int DAY = parseInt(Day18.class.getSimpleName().replaceAll("[^0-9]", ""));
 
     public static void main(String[] args) {
-        part1();
-        //part2();
+        //part1();
+        part2();
     }
 
     private static void part1() {
@@ -47,7 +56,7 @@ public class Day18 {
 
         // 1st of the long section
         testNumber = add("[[[0,[4,5]],[0,0]],[[[4,5],[2,6]],[9,5]]]", "[7,[[[3,7],[4,3]],[[6,3],[8,8]]]]");
-        testNumber = reduceAll(testNumber, true);
+        testNumber = reduceAll(testNumber, false);
         test(testNumber, "[[[[4,0],[5,4]],[[7,7],[6,0]]],[[8,[7,7]],[[7,9],[5,0]]]]", 7);
 
         // 2nd of the long section
@@ -76,10 +85,60 @@ public class Day18 {
     }
 
     private static void part2() {
+        String[] numbers = {
+                "[[[0,[5,8]],[[1,7],[9,6]]],[[4,[1,2]],[[1,4],2]]]",
+                "[[[5,[2,8]],4],[5,[[9,9],0]]]",
+                "[6,[[[6,2],[5,6]],[[7,6],[4,7]]]]",
+                "[[[6,[0,7]],[0,9]],[4,[9,[9,0]]]]",
+                "[[[7,[6,4]],[3,[1,3]]],[[[5,5],1],9]]",
+                "[[6,[[7,3],[3,2]]],[[[3,8],[5,7]],4]]",
+                "[[[[5,4],[7,7]],8],[[8,3],8]]",
+                "[[9,3],[[9,9],[6,[4,9]]]]",
+                "[[2,[[7,7],7]],[[5,8],[[9,3],[0,2]]]]",
+                "[[[[5,2],5],[8,[3,7]]],[[5,[7,5]],[4,4]]]"
+        };
+        long start = System.currentTimeMillis();
+        PermutationIterable<String> permutations = new PermutationIterable<>(asList(numbers));
+        val results = permutations.stream()
+                    .parallel()
+                    .map(ns -> {
+                        String sum = chainAdd(false, ns.toArray(String[]::new));
+                        long mag = magnitude(sum);
+                        return Pair.of(sum, mag);
+                    })
+                    .collect(toMap(p -> "ans", Function.identity(), (p1, p2) -> p1.getValue() > p2.getValue() ? p1 : p2));
+        System.out.println(results.get("ans"));
+        System.out.println(System.currentTimeMillis() - start);
+        val pair = maximumChainAdd(numbers, new LinkedHashSet<>());
+        System.out.println(pair);
+
+
+
         int ans = 0;
         System.out.println("Part 2 ANS: " + ans);
     }
 
+    private static Pair<String, Long> maximumChainAdd(String[] numbers, LinkedHashSet<Integer> added) {
+        if (added.size() == numbers.length) {
+            //String sum = chainAdd(false, added.stream().map(i -> numbers[i]).toArray(String[]::new));
+            //long mag = chainAdd(false, added.stream().map(i -> numbers[i]).toArray(String[]::new))
+            return Pair.of("sum", 1L);
+        }
+
+        Pair<String, Long> out = null;
+        for (int i = 0; i < numbers.length; i++) {
+            if (added.contains(i)) continue;
+
+            LinkedHashSet<Integer> newAdded = new LinkedHashSet<>(added);
+            newAdded.add(i);
+            Pair<String, Long> result = maximumChainAdd(numbers, newAdded);
+            if (out == null || result.getValue() > out.getValue()) {
+                out = result;
+            }
+        }
+
+        return out;
+    }
     private static String chainAdd(boolean debug, String... numbers) {
         String sum = numbers[0];
         for (int i = 1; i < numbers.length; i++) {
@@ -174,7 +233,7 @@ public class Day18 {
     }
     private static int indexOfFirstTooBigParent(String number, int startIndex) {
         int idx = indexOfFirstTooBig(number, startIndex);
-        return indexOflastDepth(number, 0, idx);
+        return indexOfLastDepth(number, 0, idx);
     }
     private static int indexOfFirstTooBig(String number, int startIndex) {
         Pattern pattern = Pattern.compile("[0-9]{2,}");
@@ -193,7 +252,7 @@ public class Day18 {
         }
         return -1;
     }
-    private static int indexOflastDepth(String number, int depth, int startIndex) {
+    private static int indexOfLastDepth(String number, int depth, int startIndex) {
         int bracketsCount = -1;
         for (int i = startIndex; i >= 0; i--) {
             if (number.charAt(i) == '[') bracketsCount++;
