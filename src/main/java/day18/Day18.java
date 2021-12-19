@@ -1,19 +1,14 @@
 package day18;
 
 import lombok.val;
-import org.apache.commons.lang3.tuple.Pair;
-import utils.PermutationIterable;
 import utils.Utils;
 
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.toMap;
 
 public class Day18 {
 

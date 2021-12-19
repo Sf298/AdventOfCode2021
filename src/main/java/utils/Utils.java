@@ -69,4 +69,13 @@ public class Utils {
         return Arrays.stream(a).mapToInt(f).toArray();
     }
 
+    public static <T> Stream<T> stream(Iterable<T> i) {
+        return stream(i.iterator());
+    }
+
+    public static <T> Stream<T> stream(Iterator<T> i) {
+        val splitItr = Spliterators.spliteratorUnknownSize(i, Spliterator.ORDERED);
+        return StreamSupport.stream(splitItr, false);
+    }
+
 }
