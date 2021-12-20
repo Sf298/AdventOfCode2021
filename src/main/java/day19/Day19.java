@@ -4,11 +4,13 @@ import lombok.val;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import utils.Utils;
+import utils.graph.EdgeGraph;
+import utils.graph.Node;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
@@ -25,12 +27,19 @@ public class Day19 {
                 new Coord(-34, 34, 1),
                 new Coord(-3, 0, 24)
         );
-        var coordsOut = List.of(
+        /*var coordsOut = List.of(
                 new Coord(-2, -1, 2),
                 new Coord(-34, 33, 2),
                 new Coord(-3, -1, 25)
         );
-        System.out.println(CoordTransformation.findTranslation(coordsIn, coordsOut));*/
+        val transform = Triple.of(CoordTransformation.FORWARDS, 3, new Coord(10, 45, -6));
+        System.out.println("in " + coordsIn);
+        val res = CoordTransformation.transform(transform, coordsIn);
+        System.out.println("out " + res);
+        val undo = CoordTransformation.transformInv(transform, res);
+        System.out.println("undo " + undo);*/
+
+
         part1();
         //part2();
     }
@@ -133,25 +142,47 @@ public class Day19 {
             val transformation = CoordTransformation.detectTransformation(inputs, outputs);
             sectionsToTransformations.put(e1.getKey(), transformation);
         }
+        /*for (val e1 : sectionsToTransformations.entrySet()) {
+            System.out.println(e1);
+        }*/
 
         // map all existing coordinates back to section 0
-
+        val edges = sectionsToTransformations.keySet().stream()
+                .flatMap(p -> Stream.of(List.of(p.getKey(), p.getValue()), List.of(p.getValue(), p.getKey())))
+                .collect(toList());
+        EdgeGraph<Integer> graph = new EdgeGraph<>(edges);
 
         // debug print
-        for (val e1 : sectionsToTransformations.entrySet()) {
-            System.out.println(e1);
+        Node<Integer> node0 = graph.getByValue(0);
+        for (int i = 1; i < coords.size(); i++) {
+            val walk = graph.getByValue(i).shortestWalk(node0/*,
+                    (n1,n2) -> (sectionsToTransformations.containsKey(Pair.of(n1.value, n2.value)) ? 1 : 99L)*/);
+            if (walk.size() != 2) continue;
+            val t = sectionsToTransformations.get(Pair.of(walk.get(0).value, 0));
+            val r = CoordTransformation.transform(t, coords.get(walk.get(0).value));
+            System.out.println(coords.get(walk.get(0).value));
+            System.out.println(coords.get(0));
+            System.out.println(r);
+            System.out.println();
+            System.out.println(i + " " + walk);
         }
+
 
         int ans = 0;
         System.out.println("Part 1 ANS: " + ans);
     }
 
+    private static void part2() {
+        int ans = 0;
+        System.out.println("Part 2 ANS: " + ans);
+    }
+
     private static List<DistancePair> calculateDistances(List<List<Coord>> l1Pairs, List<List<Coord>> l2Pairs, int s1, int s2) {
         List<DistancePair> out = new ArrayList<>();
         for (List<Coord> pair1 : l1Pairs) {
-            Coord pair1Diff = pair1.get(0).minus(pair1.get(1));
+            Coord pair1Diff = pair1.get(0).subtract(pair1.get(1));
             for (List<Coord> pair2 : l2Pairs) {
-                Coord pair2Normal = pair2.get(0).minus(pair2.get(1));
+                Coord pair2Normal = pair2.get(0).subtract(pair2.get(1));
                 // comparing by hamiltonian then euclidean increases match chance, also runs faster
                 if(pair1Diff.hamming() == pair2Normal.hamming() && pair1Diff.magnitudeSq() == pair2Normal.magnitudeSq()) {
                     out.add(new DistancePair(s1, pair1, s2, pair2, Math.sqrt(pair1Diff.magnitudeSq())));
@@ -159,11 +190,6 @@ public class Day19 {
             }
         }
         return out;
-    }
-
-    private static void part2() {
-        int ans = 0;
-        System.out.println("Part 2 ANS: " + ans);
     }
 
     private static class CoordTriplet {
@@ -304,7 +330,10 @@ public class Day19 {
             this.z = z;
         }
 
-        public Coord minus(Coord c) {
+        public Coord add(Coord c) {
+            return new Coord(x+c.x, y+c.y, z+c.z);
+        }
+        public Coord subtract(Coord c) {
             return new Coord(x-c.x, y-c.y, z-c.z);
         }
         public int magnitudeSq() {
@@ -345,7 +374,14 @@ public class Day19 {
         CLOCKWISE(c -> new Coord(c.y, -c.x, c.z)), // coords rotate clockwise from perspective of observer
         ANTICLOCKWISE(c -> new Coord(-c.y, c.x, c.z)); // coords rotate anti-clockwise from perspective of observer
 
-        //public static final CoordTransformation[] BASE_TRANSFORMATIONS = {FORWARDS, UP, DOWN, LEFT, RIGHT, BACKWARDS};
+        public static final Map<CoordTransformation, CoordTransformation> INV_ROTATION = Map.of(
+                FORWARDS, FORWARDS,
+                UP, DOWN,
+                DOWN, UP,
+                LEFT, RIGHT,
+                RIGHT, LEFT,
+                BACKWARDS, BACKWARDS
+        );
 
         Function<Coord, Coord> transformLogic;
 
@@ -353,17 +389,18 @@ public class Day19 {
             this.transformLogic = transformLogic;
         }
 
-        public Coord transform(Coord inputCoordinate) {
+        public Coord rotate(Coord inputCoordinate) {
             return transformLogic.apply(inputCoordinate);
         }
-        public List<Coord> transform(List<Coord> inputCoordinates) {
-            return inputCoordinates.stream().map(this::transform).collect(toList());
+
+        public List<Coord> rotate(List<Coord> inputCoordinates) {
+            return inputCoordinates.stream().map(this::rotate).collect(toList());
         }
 
         public static Coord findTranslation(List<Coord> inputCoords, List<Coord> outputCoords){
-            Coord firstTranslation = outputCoords.get(0).minus(inputCoords.get(0));
+            Coord firstTranslation = outputCoords.get(0).subtract(inputCoords.get(0));
             for (int i = 1; i < inputCoords.size(); i++) {
-                if (!firstTranslation.equals(outputCoords.get(1).minus(inputCoords.get(1)))) {
+                if (!firstTranslation.equals(outputCoords.get(1).subtract(inputCoords.get(1)))) {
                     return null;
                 }
             }
@@ -372,10 +409,10 @@ public class Day19 {
 
         public static Triple<CoordTransformation, Integer, Coord> detectTransformation(List<Coord> inputCoords, List<Coord> outputCoords){
             for (CoordTransformation t : CoordTransformation.values()) {
-                List<Coord> transformed = t.transform(inputCoords);
+                List<Coord> transformed = t.rotate(inputCoords);
 
                 for (int i = 0; i < 4; i++) {
-                    transformed = CLOCKWISE.transform(transformed);
+                    transformed = CLOCKWISE.rotate(transformed);
                     Coord translation = findTranslation(transformed, outputCoords);
                     if (nonNull(translation))
                         return Triple.of(t, i, translation);
@@ -383,6 +420,26 @@ public class Day19 {
 
             }
             return null;
+        }
+
+        public static List<Coord> transform(Triple<CoordTransformation, Integer, Coord> transform, List<Coord> coords) {
+            List<Coord> rotated = transform.getLeft().rotate(coords);
+            for (int i = 0; i < transform.getMiddle(); i++) {
+                rotated = CLOCKWISE.rotate(rotated);
+            }
+            return rotated.stream()
+                    .map(c -> transform.getRight().add(c))
+                    .collect(toList());
+        }
+
+        public static List<Coord> transformInv(Triple<CoordTransformation, Integer, Coord> transform, List<Coord> coords) {
+            List<Coord> transformed = coords.stream()
+                    .map(c -> c.subtract(transform.getRight()))
+                    .collect(toList());
+            for (int i = 0; i < transform.getMiddle(); i++) {
+                transformed = ANTICLOCKWISE.rotate(transformed);
+            }
+            return INV_ROTATION.get(transform.getLeft()).rotate(transformed);
         }
 
     }
