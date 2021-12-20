@@ -13,7 +13,7 @@ public class Day20 {
     private static final int DAY = Integer.parseInt(Day20.class.getSimpleName().replaceAll("[^0-9]", ""));
 
     public static void main(String[] args) {
-        part1();
+        part1(); // [268, 5900] !5813 ==5339
         part2();
     }
 
@@ -21,30 +21,43 @@ public class Day20 {
         Scanner in = Utils.createScannerForDay(DAY);
         Enhancement enhancementAlgorithm = new Enhancement(in.nextLine().split(""));
         in.nextLine();
-        Img image = new Img(Utils.stream(in)
-                .map(l -> l.split(""))
-                .toArray(String[][]::new));
+        Img image = new Img(enhancementAlgorithm, Utils.stream(in)
+                        .map(l -> l.split(""))
+                        .toArray(String[][]::new));
         image.print();
-        int step = 0;
 
-        image = image.convolve(enhancementAlgorithm.isInfiniteFieldTrue(step++), enhancementAlgorithm);
-        image = image.convolve(enhancementAlgorithm.isInfiniteFieldTrue(step++), enhancementAlgorithm);
+        image = image.convolve();
+        image = image.convolve();
 
         int ans = image.count();
         System.out.println("Part 1 ANS: " + ans);
     }
 
     private static void part2() {
-        int ans = 0;
+        Scanner in = Utils.createScannerForDay(DAY);
+        Enhancement enhancementAlgorithm = new Enhancement(in.nextLine().split(""));
+        in.nextLine();
+        Img image = new Img(enhancementAlgorithm, Utils.stream(in)
+                .map(l -> l.split(""))
+                .toArray(String[][]::new));
+        image.print();
+
+        for (int i = 0; i < 50; i++) {
+            image = image.convolve();
+        }
+
+        int ans = image.count();
         System.out.println("Part 2 ANS: " + ans);
     }
 
     private static class Img {
 
+        Enhancement enhancementAlgorithm;
+        boolean infiniteValue;
         Set<Pair<Integer, Integer>> image = new HashSet<>();
         int minX, maxX, minY, maxY;
 
-        public Img(String[][] image) {
+        public Img(Enhancement enhancementAlgorithm, String[][] image) {
             for (int j = 0; j < image.length; j++) {
                 for (int i = 0; i < image[j].length; i++) {
                     if ("#".equals(image[j][i])) {
@@ -52,22 +65,20 @@ public class Day20 {
                     }
                 }
             }
-            minX = minY = 0;
-            maxX = image.length-1;
-            maxY = image[0].length-1;
+            this.enhancementAlgorithm = enhancementAlgorithm;
+            infiniteValue = false;
+            updateMinMax();
         }
         public Img(Img image) {
             this.image.addAll(image.image);
+            this.enhancementAlgorithm = image.enhancementAlgorithm;
             updateMinMax();
+            this.infiniteValue = enhancementAlgorithm.getMappingForInfiniteValue(image.infiniteValue);
         }
 
-        /*public boolean get(int x, int y) {
-            return image.contains(Pair.of(x,y));
-        }*/
-
-        public boolean get(boolean isInfiniteFieldTrue, int x, int y) {
-            if (isInfiniteFieldTrue && !isCoordStored(x,y)) {
-                return true;
+        public boolean get(int x, int y) {
+            if (!isCoordStored(x,y)) {
+                return infiniteValue;
             }
             return image.contains(Pair.of(x, y));
         }
@@ -91,7 +102,7 @@ public class Day20 {
             return maxY;
         }
         public boolean isCoordStored(int x, int y) {
-            return !(x<minX() || x>maxX() || y<minY() || y>minY());
+            return !(x<minX() || x>maxX() || y<minY() || y>maxY());
         }
 
         public void set(int x, int y, boolean value) {
@@ -106,8 +117,8 @@ public class Day20 {
             return image.size();
         }
 
-        private Img convolve(boolean isInfiniteFieldTrue, Enhancement enhancementAlgorithm) {
-            System.out.println("conv " + isInfiniteFieldTrue);
+        private Img convolve() {
+            System.out.println("inf " + get(Integer.MAX_VALUE, Integer.MAX_VALUE));
             Img out = new Img(this);
             int buffer = 2;
             for (int j = minY()-buffer; j <= maxY()+buffer; j++) {
@@ -116,7 +127,7 @@ public class Day20 {
                     for (int y = -1; y <= 1; y++) {
                         for (int x = -1; x <= 1; x++) {
                             newValuePos = newValuePos.shiftLeft(1);
-                            if (get(isInfiniteFieldTrue, i+x, j+y)) {
+                            if (get(i+x, j+y)) {
                                 newValuePos = newValuePos.setBit(0);
                             }
                         }
@@ -131,18 +142,18 @@ public class Day20 {
         public void print() {
             for (int j = minY(); j <= maxY(); j++) {
                 for (int i = minX(); i <= maxX(); i++) {
-                    System.out.print(get(false, i,j) ? "#" : ".");
+                    System.out.print(get(i,j) ? "#" : ".");
                 }
                 System.out.println();
             }
             System.out.println();
         }
 
-        public String subToString(boolean isInfiniteFieldTrue, int i, int j) {
+        public String subToString(int i, int j) {
             StringBuilder sb = new StringBuilder();
             for (int y = -1; y <= 1; y++) {
                 for (int x = -1; x <= 1; x++) {
-                    sb.append(get(isInfiniteFieldTrue, i+x, j+y) ? "#" : ".");
+                    sb.append(get(i+x, j+y) ? "#" : ".");
                 }
                 sb.append("\n");
             }
@@ -163,6 +174,10 @@ public class Day20 {
 
         public boolean get(int i) {
             return algorithm[i];
+        }
+
+        public boolean getMappingForInfiniteValue(boolean ifInfinite) {
+            return algorithm[ifInfinite ? 511 : 0];
         }
 
         public boolean isInfiniteFieldTrue(int step) {

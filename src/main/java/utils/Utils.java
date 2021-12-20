@@ -78,4 +78,20 @@ public class Utils {
         return StreamSupport.stream(splitItr, false);
     }
 
+    public static Stream<String> stream(Scanner in) {
+        val iterator = new Iterator<String>() {
+            @Override
+            public boolean hasNext() {
+                return in.hasNextLine();
+            }
+
+            @Override
+            public String next() {
+                return in.nextLine();
+            }
+        };
+        val splitItr = Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED);
+        return StreamSupport.stream(splitItr, false);
+    }
+
 }
