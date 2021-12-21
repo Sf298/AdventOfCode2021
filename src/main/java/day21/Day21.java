@@ -1,16 +1,16 @@
 package day21;
 
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.Iterator;
 
 public class Day21 {
 
     private static final int DAY = Integer.parseInt(Day21.class.getSimpleName().replaceAll("[^0-9]", ""));
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         //part1();
         part2();
+        Thread.sleep(100);
     }
 
     private static void part1() {
@@ -42,78 +42,60 @@ public class Day21 {
     private static void part2() {
         int player1Pos = 1;
         int player2Pos = 4;
-        BigInteger[][] player1Track = newTrack2D(21, 10, player1Pos-1);
-
-        for (int i = 0; i < 7; i++) {
-            printTrack(player1Track);
-            player1Track = roll(player1Track);
+        BigInteger[][] player1Track = newTrack2D(21, 10);
+        for (int i = 1; i < 2; i++) {
+            player1Track[0][i] = BigInteger.ONE;
         }
 
-        //BigInteger sum = Arrays.stream(player1Track).reduce(BigInteger.ZERO, BigInteger::add);
-        //System.out.println(sum);
-    }
-    private static BigInteger[][] roll(BigInteger[][] track) {
-        BigInteger[][] trackOut = newTrack2D(track.length, track[0].length, -1);
+        BigInteger sum = BigInteger.ZERO;
+        for (int i = 0; i < 11; i++) {
+            System.out.println("Before step "+(i+1));
+            printTrack(player1Track);
+            sum = sum.add(roll(player1Track));
+            System.out.println(sum);
+        }
 
+    }
+    private static BigInteger roll(BigInteger[][] track) {
+        BigInteger[][] trackOut = newTrack2D(track.length, track[0].length);
+
+        BigInteger sum = BigInteger.ZERO;
         for (int score = 0; score < track.length; score++) { // scores
             for (int pos = 1; pos <= track[score].length; pos++) {  // positions
                 if (track[score][pos-1].equals(BigInteger.ZERO)) continue;
-
-                int newPos = modStart1(pos+1, track[0].length);
-                int newScore = score + newPos;
-                if (newScore < track.length) {
-                    trackOut[newScore][newPos-1] = trackOut[newScore][newPos-1].add(track[score][pos-1]);
-                }
-                newPos = modStart1(pos+2, track[0].length);
-                newScore = score + newPos;
-                if (newScore < track.length) {
-                    trackOut[newScore][newPos-1] = trackOut[newScore][newPos-1].add(track[score][pos-1]);
-                }
-                newPos = modStart1(pos+3, track[0].length);
-                newScore = score + newPos;
-                if (newScore < track.length) {
-                    trackOut[newScore][newPos-1] = trackOut[newScore][newPos-1].add(track[score][pos-1]);
+                for (int roll1 = 1; roll1 <= 3; roll1++) {
+                    for (int roll2 = 1; roll2 <= 3; roll2++) {
+                        for (int roll3 = 1; roll3 <= 3; roll3++) {
+                            int newPos = modStart1(pos + roll1+roll2+roll3, track[0].length);
+                            int newScore = score + newPos;
+                            if (newScore < track.length) {
+                                trackOut[newScore][newPos-1] = trackOut[newScore][newPos-1].add(track[score][pos-1]);
+                            } else {
+                                sum = sum.add(track[score][pos-1]);
+                            }
+                        }
+                    }
                 }
             }
         }
 
-        return trackOut;
-    }
-    private static BigInteger[] roll(BigInteger[] track) {
-        BigInteger[] trackOut = newTrack(track.length, -1);
+        copyTrack(trackOut, track);
 
-        for (int i = 0; i < track.length; i++) {
-            int pos = (i+1)%track.length;
-            trackOut[pos] = trackOut[pos].add(track[i]);
-            pos = (i+2)%track.length;
-            trackOut[pos] = trackOut[pos].add(track[i]);
-            pos = (i+3)%track.length;
-            trackOut[pos] = trackOut[pos].add(track[i]);
-        }
-
-        return trackOut;
+        return sum;
     }
-    private static BigInteger[] newTrack(int size, int startPos) {
-        BigInteger[] out = new BigInteger[size];
-        for (int i = 0; i < size; i++) {
-            out[i] = BigInteger.ZERO;
-        }
-        if (startPos > 0) {
-            out[startPos] = BigInteger.ONE;
-        }
-        return out;
-    }
-    private static BigInteger[][] newTrack2D(int maxScore, int length, int startPos) {
+    private static BigInteger[][] newTrack2D(int maxScore, int length) {
         BigInteger[][] out = new BigInteger[maxScore][length];
         for (int i = 0; i < maxScore; i++) {
             for (int j = 0; j < length; j++) {
                 out[i][j] = BigInteger.ZERO;
             }
         }
-        if (startPos >= 0) {
-            out[0][startPos] = BigInteger.ONE;
-        }
         return out;
+    }
+    private static void copyTrack(BigInteger[][] from, BigInteger[][] to) {
+        for (int i = 0; i < from.length; i++) {
+            System.arraycopy(from[i], 0, to[i], 0, from[i].length);
+        }
     }
     private static int modStart1(int i, int j) {
         return ((i-1)%j)+1;
