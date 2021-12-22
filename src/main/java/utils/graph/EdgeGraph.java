@@ -1,9 +1,6 @@
 package utils.graph;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 
@@ -31,7 +28,7 @@ public class EdgeGraph<T> {
     }
 
     /**
-     * Create a graph from a list of edges.
+     * Create a graph from a list of node pairs (edges).
      * @param values The list of edges.
      */
     public EdgeGraph(List<List<T>> values) {

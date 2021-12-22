@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.stream;
@@ -16,26 +17,30 @@ public class GridGraph<T> {
 
     /**
      * Create a graph from an array of values.
-     * @param grid The grid of values.
+     * @param shape The dimensions of the grid.
      * @param adjacency How the nodes link together. Can be 4 or 8.
+     * @param generator A function that returns the initial value for the given coordinate.
      */
-    public GridGraph(T[][] grid, int adjacency) {
+    public GridGraph(int[] shape, int adjacency, Function<Coord, T> generator) {
         if (adjacency != 4 && adjacency != 8) {
             throw new IllegalArgumentException("Invalid adjacency '" + adjacency + "'");
         }
 
         this.grid = new ArrayList<>();
 
-        for (int i = 0; i < grid.length; i++) {
+        for (int i = 0; i < shape[0]; i++) {
             List<GridNode> gi = new ArrayList<>();
             this.grid.add(gi);
-            for (int j = 0; j < grid[i].length; j++) {
-                gi.add(new GridNode(grid[i][j], new Coord(i,j)));
+            for (int j = 0; j < shape[1]; j++) {
+                Coord c = new Coord(i,j);
+                gi.add(new GridNode(generator.apply(c), c));
             }
         }
 
-        for (int i = 0; i < grid.length; i++) {
-            for (int j = 0; j < grid[i].length; j++) {
+        for (int i = 0; i < shape[0]; i++) {
+            for (int j = 0; j < shape[1]; j++) {
+                if (isNull(get(i, j))) continue;
+
                 if (nonNull(get(i-1, j))) get(i, j).adjacent.add(get(i-1, j));
                 if (nonNull(get(i+1, j))) get(i, j).adjacent.add(get(i+1, j));
                 if (nonNull(get(i, j-1))) get(i, j).adjacent.add(get(i, j-1));
@@ -49,6 +54,15 @@ public class GridGraph<T> {
                 }
             }
         }
+    }
+
+    /**
+     * Create a graph from an array of values.
+     * @param grid The grid of values.
+     * @param adjacency How the nodes link together. Can be 4 or 8.
+     */
+    public GridGraph(T[][] grid, int adjacency) {
+        this(new int[] {grid.length, grid[0].length}, adjacency, c -> grid[c.get(0)][c.get(1)]);
     }
 
     public int size() {

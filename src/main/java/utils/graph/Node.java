@@ -332,7 +332,16 @@ public class Node<T> {
     }
 
     /**
-     * Find all possible paths from one node to another.
+     * Find the shortest path from one node to another.
+     * @param target The destination node.
+     * @return The shortest possible path from this not to the target.
+     */
+    public List<Node<T>> shortestWalk(@NonNull Node<T> target) {
+        return shortestWalk(target, (n1, n2) -> 1L);
+    }
+
+    /**
+     * Find the shortest path by weight from one node to another.
      * @param target The destination node.
      * @param edgeWeight A function that calculates the weight of moving from the left node to the right node.
      *                   A <code>null</code> indicates that the edge cannot be traversed.

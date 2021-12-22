@@ -1,17 +1,14 @@
 package utils;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
 
 public class Combinations {
 
-    public static <T> Iterable<List<T>> combinations(List<T> items) {
+    public static <T> Iterable<List<T>> combinations(Collection<T> items) {
         return () -> new Iterator<>() {
             final List<T> itemsCopy = new ArrayList<>(items);
             BigInteger index = BigInteger.ZERO;
