@@ -45,7 +45,7 @@ public class Day19 {
     }
 
     private static void part1() {
-        String rawInput = Utils.getStringForDay(DAY);
+        String rawInput = Utils.getStringForDay(-DAY);
 
         // parse coords from String
         // [section1[coord1, coor2, ...], section2[coord1, coor2, ...]]
@@ -58,26 +58,27 @@ public class Day19 {
         // map each coord in a section to every other coord in the same section
         // {<section1, section2>, [[coord1, coor2], [coord1, coor3], ...]}
         System.out.println("pairing coord pairs");
-        Map<Integer, List<List<Coord>>> sectionToAllPairs = new HashMap<>();
+        Map<Integer, Set<Set<Coord>>> sectionToAllPairs = new HashMap<>();
         for (int i = 0; i < coords.size(); i++) {
-            List<List<Coord>> sectionPairs = stream(combinations(coords.get(i), 2))
-                    .filter(s -> s.size() == 2)
-                    .collect(toList());
+            Set<Set<Coord>> sectionPairs = stream(combinations(coords.get(i), 2))
+                    .map(HashSet::new)
+                    .collect(toSet());
             sectionToAllPairs.put(i, sectionPairs);
         }
+
+        sectionToAllPairs.entrySet().forEach(System.out::println);
 
         // compare coord pairs to pairs in every other section by distance between pairs
         // {<section1, section2>, [DistancePair1, DistancePair2, ...]}
         System.out.println("calculating distances between pairs");
         Map<Pair<Integer,Integer>, List<DistancePair>> sectionsToAllDistancePairs = new HashMap<>();
-        for (int i = 0; i < coords.size(); i++) {
-            for (int j = 0; j < i; j++) {
-                sectionsToAllDistancePairs.put(Pair.of(i,j),
-                        calculateDistances(sectionToAllPairs.get(i), sectionToAllPairs.get(j), i, j));
-            }
+        for (List<Map.Entry<Integer, Set<Set<Coord>>>> entry : combinations(sectionToAllPairs.entrySet())) {
+            //sectionsToAllDistancePairs.put(entry, calculateDistances(sectionToAllPairs.get(i), sectionToAllPairs.get(j), i, j));
         }
 
-        // loop through each combination of 3 DistancePairs and filter out triples of pairs that dont loop
+        sectionsToAllDistancePairs.entrySet().forEach(System.out::println);
+
+/*        // loop through each combination of 3 DistancePairs and filter out triples of pairs that dont loop
         // reduce the triples of pairs into 3 coordinates (keep the mapping of sections)
         // {<section1, section2>, [CoordTriplet1, CoordTriplet2, ...]}
         System.out.println("finding loops of triples");
@@ -129,7 +130,7 @@ public class Day19 {
             }
             System.out.println();
         }
-        System.out.println(sectionsFound);*/
+        System.out.println(sectionsFound);*
 
         // find the transformation for each mapped section.
         // {<section1, section2>, (rotation, numberOfClockwiseRotations, translation)}
@@ -144,7 +145,7 @@ public class Day19 {
         }
         /*for (val e1 : sectionsToTransformations.entrySet()) {
             System.out.println(e1);
-        }*/
+        }*
 
         // map all existing coordinates back to section 0
         val edges = sectionsToTransformations.keySet().stream()
@@ -156,7 +157,7 @@ public class Day19 {
         Node<Integer> node0 = graph.getByValue(0);
         for (int i = 1; i < coords.size(); i++) {
             val walk = graph.getByValue(i).shortestWalk(node0/*,
-                    (n1,n2) -> (sectionsToTransformations.containsKey(Pair.of(n1.value, n2.value)) ? 1 : 99L)*/);
+                    (n1,n2) -> (sectionsToTransformations.containsKey(Pair.of(n1.value, n2.value)) ? 1 : 99L)*);
             if (walk.size() != 2) continue;
             val t = sectionsToTransformations.get(Pair.of(walk.get(0).value, 0));
             val r = CoordTransformation.transform(t, coords.get(walk.get(0).value));
@@ -165,7 +166,7 @@ public class Day19 {
             System.out.println(r);
             System.out.println();
             System.out.println(i + " " + walk);
-        }
+        }*/
 
 
         int ans = 0;
@@ -177,12 +178,14 @@ public class Day19 {
         System.out.println("Part 2 ANS: " + ans);
     }
 
-    private static List<DistancePair> calculateDistances(List<List<Coord>> l1Pairs, List<List<Coord>> l2Pairs, int s1, int s2) {
+    private static List<DistancePair> calculateDistances(Set<Set<Coord>> l1Pairs, Set<Set<Coord>> l2Pairs, int s1, int s2) {
         List<DistancePair> out = new ArrayList<>();
-        for (List<Coord> pair1 : l1Pairs) {
-            Coord pair1Diff = pair1.get(0).subtract(pair1.get(1));
-            for (List<Coord> pair2 : l2Pairs) {
-                Coord pair2Normal = pair2.get(0).subtract(pair2.get(1));
+        for (Set<Coord> pair1 : l1Pairs) {
+            Iterator<Coord> i1 = pair1.iterator();
+            Coord pair1Diff = i1.next().subtract(i1.next());
+            for (Set<Coord> pair2 : l2Pairs) {
+                Iterator<Coord> i2 = pair2.iterator();
+                Coord pair2Normal = i2.next().subtract(i2.next());
                 // comparing by hamiltonian then euclidean increases match chance, also runs faster
                 if(pair1Diff.hamming() == pair2Normal.hamming() && pair1Diff.magnitudeSq() == pair2Normal.magnitudeSq()) {
                     out.add(new DistancePair(s1, pair1, s2, pair2, Math.sqrt(pair1Diff.magnitudeSq())));
@@ -229,9 +232,9 @@ public class Day19 {
     private static class DistancePair {
         double dist;
         int section1;
-        List<Coord> pair1;
+        Set<Coord> pair1;
         int section2;
-        List<Coord> pair2;
+        Set<Coord> pair2;
 
         public static boolean isLooped(List<Coord> e1, List<Coord> e2, List<Coord> e3) {
             // AB AC BC
@@ -254,7 +257,7 @@ public class Day19 {
             return false;
         }
 
-        public DistancePair(int section1, List<Coord> pair1, int section2, List<Coord> pair2, double dist) {
+        public DistancePair(int section1, Set<Coord> pair1, int section2, Set<Coord> pair2, double dist) {
             this.dist = dist;
             this.section1 = section1;
             this.pair1 = pair1;
@@ -271,7 +274,9 @@ public class Day19 {
         }
 
         public boolean containsCommon(DistancePair p) {
-            return contains(p.pair1.get(0)) || contains(p.pair1.get(1)) || contains(p.pair2.get(0)) || contains(p.pair2.get(1));
+            Iterator<Coord> i1 = p.pair1.iterator();
+            Iterator<Coord> i2 = p.pair2.iterator();
+            return contains(i1.next()) || contains(i1.next()) || contains(i2.next()) || contains(i2.next());
         }
 
         @Override

@@ -32,7 +32,7 @@ public class GridGraph<T> {
             List<GridNode> gi = new ArrayList<>();
             this.grid.add(gi);
             for (int j = 0; j < shape[1]; j++) {
-                Coord c = new Coord(i,j);
+                Coord c = new Coord(new int[] {i, j});
                 gi.add(new GridNode(generator.apply(c), c));
             }
         }
@@ -124,12 +124,67 @@ public class GridGraph<T> {
         private final int[] coord;
         private Integer hashCache;
 
-        public Coord(int... coord) {
+        public Coord(int[] coord) {
             this.coord = Arrays.copyOf(coord, coord.length);
+        }
+
+        public Coord(int dims, int initialValue) {
+            this.coord = new int[dims];
+            for (int i = 0; i < dims; i++) {
+                coord[i] = initialValue;
+            }
         }
 
         public int get(int index) {
             return coord[index];
+        }
+
+        public int dims() {
+            return coord.length;
+        }
+
+        public Coord add(Coord c) {
+            Coord newCoord = new Coord(coord);
+            for (int i = 0; i < coord.length; i++) {
+                newCoord.coord[i] = coord[i] + c.coord[i];
+            }
+            return newCoord;
+        }
+
+        public Coord subtract(Coord c) {
+            Coord newCoord = new Coord(coord);
+            for (int i = 0; i < coord.length; i++) {
+                newCoord.coord[i] = coord[i] - c.coord[i];
+            }
+            return newCoord;
+        }
+
+        public Coord min(Coord c) {
+            Coord newCoord = new Coord(coord);
+            for (int i = 0; i < coord.length; i++) {
+                newCoord.coord[i] = Math.min(coord[i], c.coord[i]);
+            }
+            return newCoord;
+        }
+
+        public Coord max(Coord c) {
+            Coord newCoord = new Coord(coord);
+            for (int i = 0; i < coord.length; i++) {
+                newCoord.coord[i] = Math.max(coord[i], c.coord[i]);
+            }
+            return newCoord;
+        }
+
+        public Coord abs() {
+            Coord newCoord = new Coord(coord);
+            for (int i = 0; i < coord.length; i++) {
+                newCoord.coord[i] = Math.abs(coord[i]);
+            }
+            return newCoord;
+        }
+
+        public int[] toArray() {
+            return Arrays.copyOf(coord, coord.length);
         }
 
         @Override

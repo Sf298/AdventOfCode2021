@@ -8,9 +8,11 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static java.lang.Integer.parseInt;
+
 public class Day24 {
 
-    private static final int DAY = Integer.parseInt(Day24.class.getSimpleName().replaceAll("[^0-9]", ""));
+    private static final int DAY = parseInt(Day24.class.getSimpleName().replaceAll("[^0-9]", ""));
 
     public static void main(String[] args) {
         part1();
@@ -18,13 +20,38 @@ public class Day24 {
     }
 
     private static void part1() {
-        val lines = Utils.streamLinesForDay(DAY).collect(Collectors.toList());
-        Function<String, Integer> compiled = compile(lines);
+        long start = System.currentTimeMillis();
+
+        int[] a = {1, 1, 1, 1, 1, 26, 1, 26, 26, 1, 26, 26, 26, 26};
+        int[] b = {13, 11, 12, 10, 14, -1, 14, -16, -8, 12, -16, -13, -6, -6};
+        int[] c = {6, 11, 5, 6, 8, 14, 9, 4, 7, 13, 11, 11, 6, 1};
         for (long i = 99999999999999L; i > 0L; i--) {
-            val result = compiled.apply(String.valueOf(i));
-            if (result == 0) {
-                System.out.println(i + ", " + result);
+            String s = String.valueOf(i);
+            if(s.contains("0")) continue;
+
+            val result = s.split("");
+            long z = 0;
+            for (int j = 0; j < 14; j++) {
+                z = manualStep(parseInt(result[j]), z, a[j], b[j], c[j], j);
+            }
+            if (z == 0) {
+                System.out.println(i + ", " + z);
+                System.out.println(System.currentTimeMillis() - start);
                 break;
+            }
+        }
+        for (long i = 11111111111111L; i <= 99999999999999L; i++) {
+            String s = String.valueOf(i);
+            if(s.contains("0")) continue;
+
+            val result = s.split("");
+            long z = 0;
+            for (int j = 0; j < 14; j++) {
+                z = manualStep(parseInt(result[j]), z, a[j], b[j], c[j], j);
+            }
+            if (z == 0) {
+                System.out.println(i + ", " + z);
+                System.out.println(System.currentTimeMillis() - start);
             }
         }
 
@@ -37,6 +64,15 @@ public class Day24 {
         System.out.println("Part 2 ANS: " + ans);
     }
 
+
+    private static long manualStep(int w, long z, int a, int b, int c,    int j) {
+        int x;
+        //System.out.println("\t\t\t"+j+" " + (26 - (z % 26)));
+        //x = ((z % 26 + b) != w) ? 1 : 0;
+        //z = ((z / a) * (25 * x + 1)) + ((w + c)*x);
+        //return z;
+        return ((z % 26 + b) != w) ? (((z / a) * 26) + (w + c)) : (z / a);
+    }
 
     private static Function<String, Integer> compile(List<String> lines) {
         val compiledOps = new ArrayList<BiFunction<int[], Iterator<Integer>, Integer>>();
@@ -85,7 +121,7 @@ public class Day24 {
             case "y" -> rightVariable = mem -> mem[2];
             case "z" -> rightVariable = mem -> mem[3];
             default -> {
-                int value = Integer.parseInt(split[2]);
+                int value = parseInt(split[2]);
                 rightVariable = mem -> value;
             }
         }
@@ -102,7 +138,7 @@ public class Day24 {
 
     private static Function<int[], Integer> getLiteral(String str) {
         try {
-            final int parsed = Integer.parseInt(str);
+            final int parsed = parseInt(str);
             return mem -> parsed;
         } catch (Exception e) {
             switch (str) {
